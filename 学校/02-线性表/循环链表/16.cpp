@@ -21,11 +21,12 @@ typedef struct LNode
 
 //--------------基本操作-----------------
 Status InitList(LinkList &L)
-{ // 建立一个空的链表，L为头结点指针.
+{                                        // 建立一个空的链表，L为头结点指针.
     L = (LinkList)malloc(sizeof(LNode)); // 生成头结点
     if (!L)
         return ERROR;
-    @ @;
+    L->next = L;
+    L->data = 0;
     return OK;
 } // InitList
 
@@ -33,7 +34,7 @@ Status DestroyList(LinkList &L)
 {
     LinkList p, q;
     p = L->next;
-    while (@ @)
+    while (p != L) // 顺着环走，重新回到表头说明一圈已走完
     {
         q = p->next;
         free(p);
@@ -45,7 +46,7 @@ Status DestroyList(LinkList &L)
 
 int ListEmpty(LinkList L)
 {
-    if (@ @)
+    if (L->next == L) // 头结点指向自己 = 空表
         return TRUE;
     else
         return FALSE;
@@ -56,16 +57,16 @@ Status GetElem(LinkList L, int i, ElemType &e)
   // 当第i个元素存在时,其值赋给e并返回OK,否则返回ERROR
     LinkList p;
     int j;
-    p = @ @;
+    p = L->next;
     j = 1; // 初始化,p指向第一个结点,j为计数器
-    while (@ @)
-    { // 顺指针向后查找,直到p指向第i个元素
+    while (p != L && j < i)
+    { // 顺指针向后查找,直到p指向第i个元素或绕回表头
         p = p->next;
         ++j;
     }
-    if (@ @ || j > i)
+    if (p == L || j > i)
         return ERROR; // 第i个元素不存在
-    e = @ @;          // 取第i个元素
+    e = p->data;      // 取第i个元素
     return OK;
 } // GetElem
 
@@ -75,19 +76,19 @@ Status ListInsert(LinkList &L, int i, ElemType e)
     int j;
     p = L;
     j = 0;
-    while (@ @)
+    while (p->next != L && j < i - 1)
     {
         p = p->next;
         ++j;
-    } // 寻找第i-1个结点
+    } // 寻找第i-1个结点,绕回表头就停
     if (j > i - 1 || j < i - 1)
         return ERROR;                    // i 小于1或者大于表长
     s = (LinkList)malloc(sizeof(LNode)); // 生成新结点
     if (!s)
         return ERROR;
     s->data = e;
-    s->next = @ @; // 插入L中
-    @ @;
+    s->next = p->next; // 插入L中
+    p->next = s;
     return OK;
 }
 
@@ -96,17 +97,22 @@ Status ListDelete(LinkList &L, int i, ElemType &e)
     int j;
     LinkList p, q;
     p = L;
-    j = @ @;
-    while (@ @)
+    j = 0;
+    while (p->next != L && j < i - 1)
     {
         p = p->next;
         ++j;
     } // 寻找第i个元素,并令p指向其前驱
-    if (@ @ || j > i - 1)
+    if (p->next == L || j > i - 1)
         return ERROR; // 删除位置不合理
     q = p->next;
-    p->next = @ @; // 删除并释放结点
-    e = @ @;
+    p->next = q->next; // 删除并释放结点
+    e = q->data;
     free(q);
     return OK;
+}
+
+int main(void)
+{
+    return 0;
 }
