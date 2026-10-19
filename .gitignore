@@ -16,9 +16,7 @@
 .DS_Store
 
 # 翁恺课件(22M 二进制文件,不进 git;来源见其中的 来源.md,可随时重新克隆)
-C语言课件-翁恺/
-
-Henry-s-c-course-lab-neo/
+C语言基础/翁恺课件/
 
 .vscode/
 
